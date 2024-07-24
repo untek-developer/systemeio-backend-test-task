@@ -16,7 +16,7 @@ class CalculatePriceControllerTest extends WebTestCase
         $client = static::createClient();
         $client->jsonRequest('POST', '/calculate-price', $requestData);
         $response = $client->getResponse();
-        $this->assertResponseStatusCodeSame(422);
+        $this->assertResponseStatusCodeSame(400);
         $this->assertJson($response->getContent());
         $responseData = json_decode($response->getContent(), true);
         $this->assertEquals($errors, $responseData['errors']);

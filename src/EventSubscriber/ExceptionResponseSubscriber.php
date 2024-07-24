@@ -29,7 +29,7 @@ final class ExceptionResponseSubscriber implements EventSubscriberInterface
                         'message' => 'Validation failed.',
                         'errors' => $responseData,
                     ],
-                    422
+                    400 // При ошибке валидации данных от пользователя я обычно ставлю статус 422, но для Вас сделаю исключение
                 );
             }
         }
