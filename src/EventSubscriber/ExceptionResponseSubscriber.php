@@ -31,9 +31,18 @@ final class ExceptionResponseSubscriber implements EventSubscriberInterface
                     ],
                     422
                 );
-                $event->setResponse($response);
             }
         }
+        // todo: добавить обработку ошибок аутентификации (401), недостаточно прав доступа (403), не найдена сущность (404)
+        if(!isset($response)) {
+            $response = new JsonResponse(
+                [
+                    'message' => 'Internal error.',
+                ],
+                500
+            );
+        }
+        $event->setResponse($response);
     }
 
     private function extractErrorListFromValidationFailedException(ValidationFailedException $exception)
