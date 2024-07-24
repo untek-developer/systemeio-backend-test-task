@@ -73,6 +73,28 @@ class PurchaseControllerTest extends WebTestCase
     {
         yield [
             [
+            ],
+            [
+                0 => [
+                    "field" => "product",
+                    "message" => "This value should not be blank.",
+                ],
+                [
+                    "field" => "taxNumber",
+                    "message" => "This value should not be blank.",
+                ],
+                [
+                    "field" => "couponCode",
+                    "message" => "This value should not be blank.",
+                ],
+                [
+                    "field" => "paymentProcessor",
+                    "message" => "This value should not be blank.",
+                ],
+            ],
+        ];
+        yield [
+            [
                 "product" => 1,
                 "taxNumber" => "AS123456789",
                 "couponCode" => "E15",

@@ -8,40 +8,36 @@ class PurchaseDto
 {
     public function __construct(
         #[Assert\NotBlank]
-        #[Assert\Type('int')]
-        private int $product,
+        private ?int $product,
         #[Assert\NotBlank]
-        #[Assert\Type('string')]
         #[Assert\Regex('/^(DE|IT|GR|FR[A-Z]{2})\d+$/')]
-        private string $taxNumber,
+        private ?string $taxNumber,
         #[Assert\NotBlank]
-        #[Assert\Type('string')]
         #[Assert\Regex('/^D\d+$/')]
-        private string $couponCode,
+        private ?string $couponCode,
         #[Assert\NotBlank]
-        #[Assert\Type('string')]
         #[Assert\Regex('/^(paypal|stripe)$/')]
-        private string $paymentProcessor,
+        private ?string $paymentProcessor,
     )
     {
     }
 
-    public function getProduct(): int
+    public function getProduct(): ?int
     {
         return $this->product;
     }
 
-    public function getTaxNumber(): string
+    public function getTaxNumber(): ?string
     {
         return $this->taxNumber;
     }
 
-    public function getCouponCode(): string
+    public function getCouponCode(): ?string
     {
         return $this->couponCode;
     }
 
-    public function getPaymentProcessor(): string
+    public function getPaymentProcessor(): ?string
     {
         return $this->paymentProcessor;
     }
