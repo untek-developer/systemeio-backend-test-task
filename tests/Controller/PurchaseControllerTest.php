@@ -6,51 +6,124 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class PurchaseControllerTest extends WebTestCase
 {
-    public function testIndex(): void
+    /**
+     * @dataProvider validationErrorProvider
+     * @param array $requestData
+     * @param array $errors
+     */
+    public function testValidation(array $requestData, array $errors): void
     {
         $client = static::createClient();
-        $client->jsonRequest('POST', '/purchase', [
-            "product" => 1,
-            "taxNumber" => "IT12345678900",
-            "couponCode" => "D15",
-            "paymentProcessor" => "paypal",
-        ]);
-        $response = $client->getResponse();
-        $this->assertResponseIsSuccessful();
-        $this->assertResponseHeaderSame('Content-Type', 'application/json');
-        $this->assertJson($response->getContent());
-        $responseData = json_decode($response->getContent(), true);
-        $this->assertEquals('Welcome to your new controller!', $responseData['message']);
-        $this->assertEquals('src/Controller/PurchaseController.php', $responseData['path']);
-    }
-
-    public function testValidation(): void
-    {
-        $client = static::createClient();
-        $client->jsonRequest('POST', '/purchase', [
-            "product" => 1,
-            "taxNumber" => "AS123456789",
-            "couponCode" => "E15",
-            "paymentProcessor" => "webmoney",
-        ]);
+        $client->jsonRequest('POST', '/purchase', $requestData);
         $response = $client->getResponse();
         $this->assertResponseStatusCodeSame(422);
-        $this->assertResponseHeaderSame('Content-Type', 'application/json');
         $this->assertJson($response->getContent());
         $responseData = json_decode($response->getContent(), true);
-        $this->assertEquals([
+        $this->assertEquals($errors, $responseData['errors']);
+    }
+
+    /**
+     * @dataProvider successProvider
+     * @param array $requestData
+     */
+    public function testSuccess(array $requestData): void
+    {
+        $client = static::createClient();
+        $client->jsonRequest('POST', '/purchase', $requestData);
+        $this->assertResponseIsSuccessful();
+    }
+
+    public function successProvider(): ?\Generator
+    {
+        yield [
             [
-                "field" => "taxNumber",
-                "message" => "This value is not valid.",
+                "product" => 1,
+                "taxNumber" => "FRGZ123456789",
+                "couponCode" => "D15",
+                "paymentProcessor" => "paypal",
+            ]
+        ];
+        yield [
+            [
+                "product" => 1,
+                "taxNumber" => "GR123456789",
+                "couponCode" => "D15",
+                "paymentProcessor" => "paypal",
+            ]
+        ];
+        yield [
+            [
+                "product" => 1,
+                "taxNumber" => "IT123456789",
+                "couponCode" => "D15",
+                "paymentProcessor" => "paypal",
+            ]
+        ];
+        yield [
+            [
+                "product" => 1,
+                "taxNumber" => "DE123456789",
+                "couponCode" => "D15",
+                "paymentProcessor" => "paypal",
+            ]
+        ];
+    }
+
+    public function validationErrorProvider(): ?\Generator
+    {
+        yield [
+            [
+                "product" => 1,
+                "taxNumber" => "AS123456789",
+                "couponCode" => "E15",
+                "paymentProcessor" => "paypal",
             ],
             [
-                "field" => "couponCode",
-                "message" => "This value is not valid.",
+                [
+                    "field" => "taxNumber",
+                    "message" => "This value is not valid.",
+                ],
+                [
+                    "field" => "couponCode",
+                    "message" => "This value is not valid.",
+                ],
+            ],
+        ];
+        yield [
+            [
+                "product" => 1,
+                "taxNumber" => "FR123456789",
+                "couponCode" => "D15",
+                "paymentProcessor" => "paypal",
             ],
             [
-                "field" => "paymentProcessor",
-                "message" => "This value is not valid.",
+                [
+                    "field" => "taxNumber",
+                    "message" => "This value is not valid.",
+                ],
             ],
-        ], $responseData['errors']);
+        ];
+        yield [
+            [
+                "product" => 1,
+                "taxNumber" => "AS123456789",
+                "couponCode" => "E15",
+                "paymentProcessor" => "webmoney",
+            ],
+            [
+                [
+                    "field" => "taxNumber",
+                    "message" => "This value is not valid.",
+                ],
+                [
+                    "field" => "couponCode",
+                    "message" => "This value is not valid.",
+                ],
+                [
+                    "field" => "paymentProcessor",
+                    "message" => "This value is not valid.",
+                ],
+            ],
+        ];
     }
 }
