@@ -35,6 +35,9 @@ console: ## Login in console.
 install: ## Install dependencies without running the whole application.
 	${DC_RUN} composer install
 
+test:
+	${DC_RUN} php bin/phpunit
+
 success-message:
 	@echo "You can now access the application at http://localhost:8337"
 	@echo "Good luck! 🚀"
